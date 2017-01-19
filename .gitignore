@@ -30,3 +30,7 @@ build
 *.exe
 *.out
 *.app
+
+
+# Other
+*.kdev4

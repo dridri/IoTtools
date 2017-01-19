@@ -1,5 +1,5 @@
 /*
- * BCFlight
+ * IoTtools
  * Copyright (C) 2016 Adrien Aubry (drich)
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -32,24 +32,43 @@ Messenger::Messenger( Link* link )
 	, mConnected( false )
 	, mConnectionEstablished( false )
 {
+	fDebug( link );
 }
 
 
 Messenger::~Messenger()
 {
+	fDebug();
+}
+
+
+bool Messenger::isConnected()
+{
+	fDebug();
+	return ( mLink and mLink->isConnected() and mConnectionEstablished );
+}
+
+
+Link* Messenger::link()
+{
+	fDebug();
+	return mLink;
 }
 
 
 void Messenger::loadConfig( const std::string& content )
 {
+	fDebug( "[...]" );
 }
 
 
 void Messenger::RegisterCallback( uint32_t command, const std::function<void()>& fct )
 {
+	fDebug( command, "callback" );
 }
 
 
 void Messenger::Poll( uint32_t timeout_ms )
 {
+	fDebug( timeout_ms );
 }

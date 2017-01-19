@@ -1,5 +1,5 @@
 /*
- * BCFlight
+ * IoTtools
  * Copyright (C) 2016 Adrien Aubry (drich)
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -53,6 +53,8 @@ typedef struct in_addr IN_ADDR;
 #endif
 #define UDPLITE_SEND_CSCOV   10 /* sender partial coverage (as sent)      */
 #define UDPLITE_RECV_CSCOV   11 /* receiver partial coverage (threshold ) */
+
+using namespace IoT;
 
 
 Socket::Socket( const std::string& host, uint16_t port, PortType type )

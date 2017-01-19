@@ -1,5 +1,5 @@
 /*
- * BCFlight
+ * IoTtools
  * Copyright (C) 2016 Adrien Aubry (drich)
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -34,6 +34,7 @@
 
 #define LINK_ERROR_TIMEOUT -3
 
+namespace IoT {
 
 class Packet
 {
@@ -92,5 +93,7 @@ protected:
 
 	uint64_t GetTicks();
 };
+
+}; // IoT
 
 #endif // LINK_H

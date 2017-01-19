@@ -16,45 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef SOCKET_H
-#define SOCKET_H
+#include <Messenger.h>
+#include <Socket.h>
 
-#ifdef WIN32
-#include <winsock2.h>
-#define socklen_t int
-#else
-#include <netinet/in.h>
-#endif
-#include "Link.h"
+using namespace IoT;
 
-namespace IoT {
-
-class Socket : public Link
+int main( int ac, char** av )
 {
-public:
-	typedef enum {
-		TCP,
-		UDP,
-		UDPLite
-	} PortType;
+	Link* link = new Socket( "127.0.0.1", 4242, Socket::TCP );
+	Messenger* messenger = new Messenger( link );
+	messenger->Poll();
 
-	Socket( const std::string& host, uint16_t port, PortType type = TCP );
-	virtual ~Socket();
-
-	int Connect();
-	int setBlocking( bool blocking );
-
-protected:
-	int Read( void* buf, uint32_t len, int32_t timeout );
-	int Write( const void* buf, uint32_t len, int32_t timeout );
-
-	std::string mHost;
-	uint16_t mPort;
-	PortType mPortType;
-	int mSocket;
-	struct sockaddr_in mSin;
-};
-
-}; // IoT
-
-#endif // ( BUILD_SOCKET == 1 )
+	return 0;
+}

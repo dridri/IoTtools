@@ -1,5 +1,5 @@
 /*
- * BCFlight
+ * IoTtools
  * Copyright (C) 2016 Adrien Aubry (drich)
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #include <functional>
 
 #include "links/Link.h"
+#include "Debug.h"
 
 namespace IoT {
 
@@ -33,8 +34,8 @@ public:
 	Messenger( Link* link );
 	virtual ~Messenger();
 
-	bool isConnected() const { return ( mLink and mLink->isConnected() and mConnectionEstablished ); }
-	Link* link() const { return mLink; }
+	bool isConnected();
+	Link* link();
 	void loadConfig( const std::string& content );
 
 	void RegisterCallback( uint32_t command, const std::function<void()>& fct );

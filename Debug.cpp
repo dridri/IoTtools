@@ -16,45 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef SOCKET_H
-#define SOCKET_H
+#include "Debug.h"
 
-#ifdef WIN32
-#include <winsock2.h>
-#define socklen_t int
-#else
-#include <netinet/in.h>
-#endif
-#include "Link.h"
-
-namespace IoT {
-
-class Socket : public Link
-{
-public:
-	typedef enum {
-		TCP,
-		UDP,
-		UDPLite
-	} PortType;
-
-	Socket( const std::string& host, uint16_t port, PortType type = TCP );
-	virtual ~Socket();
-
-	int Connect();
-	int setBlocking( bool blocking );
-
-protected:
-	int Read( void* buf, uint32_t len, int32_t timeout );
-	int Write( const void* buf, uint32_t len, int32_t timeout );
-
-	std::string mHost;
-	uint16_t mPort;
-	PortType mPortType;
-	int mSocket;
-	struct sockaddr_in mSin;
-};
-
-}; // IoT
-
-#endif // ( BUILD_SOCKET == 1 )
+// Debugging enabled by default
+bool Debug::sEnabled = true;

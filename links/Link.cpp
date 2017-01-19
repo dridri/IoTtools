@@ -1,5 +1,5 @@
 /*
- * BCFlight
+ * IoTtools
  * Copyright (C) 2016 Adrien Aubry (drich)
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,8 @@
 #include <time.h>
 #include <string.h>
 #include "Link.h"
+
+using namespace IoT;
 
 Link::Link()
 	: mConnected( false )
