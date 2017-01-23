@@ -38,7 +38,7 @@ public:
 	Link* link();
 	void loadConfig( const std::string& content );
 
-	void RegisterCallback( uint32_t command, const std::function<void()>& fct );
+	void RegisterCallback( uint32_t command, const std::function<void(Packet&)>& fct );
 	void Poll( uint32_t timeout_ms = 0 );
 
 protected:
@@ -46,7 +46,7 @@ protected:
 	bool mConnected;
 	bool mConnectionEstablished;
 
-	static std::map< uint32_t, std::function<void()> > mCallbacks;
+	static std::map< uint32_t, std::function<void(Packet&)> > mCallbacks;
 };
 
 }; // IoT

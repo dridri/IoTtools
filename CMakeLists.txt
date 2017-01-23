@@ -22,5 +22,5 @@ add_library( iottools STATIC
 			)
 target_link_libraries( iottools )
 
-add_executable( example-01-basic examples/01-basic.cpp )
+add_executable( example-01-basic examples/01-basic-slave.cpp )
 target_link_libraries( example-01-basic iottools -pthread ${OTHER_LIBS} )

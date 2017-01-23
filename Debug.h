@@ -48,11 +48,17 @@ public:
 	}
 
 	static bool enabled() { return sEnabled; }
+	static bool showFilename() { return sFilename; }
+	static bool showLineNumber() { return sLineNumber; }
 	static void setEnabled( bool en ) { sEnabled = en; }
+	static void setShowLineNumber( bool en ) { sLineNumber = en; }
+	static void setShowFilename( bool en ) { sFilename = en; }
 
 private:
 	std::stringstream mSS;
 	static bool sEnabled;
+	static bool sLineNumber;
+	static bool sFilename;
 };
 
 
@@ -79,8 +85,6 @@ static std::string self_thread() {
 
 #define __CLASS_NAME__ className(__PRETTY_FUNCTION__)
 #define __FUNCTION_NAME__ ( std::string("\x1B[94m") + __FUNCTION__ + "\x1B[0m" )
-
-#define gDebug() Debug() << self_thread() << __CLASS_NAME__ << "::" << __FUNCTION_NAME__ << "() "
 
 #pragma GCC system_header // HACK Disable unused-function warnings
 static void fDebug_base( std::stringstream& out, const char* end, bool f ) {
@@ -136,7 +140,8 @@ template<typename... Args> static std::string fDebug_top( const Args&... args ) 
 	return out.str();
 }
 
-#define fDebug( ... ) { Debug dbg; dbg << self_thread() << __CLASS_NAME__ << "::" << __FUNCTION_NAME__ << "("; dbg << fDebug_top( __VA_ARGS__ ); }
+#define gDebug() Debug() << self_thread() << (Debug::showFilename() ? (std::string(__FILE__)+":") : "") << (Debug::showLineNumber() ? (std::to_string(__LINE__)+": ") : "") << __CLASS_NAME__ << "::" << __FUNCTION_NAME__ << "() "
+#define fDebug( ... ) { Debug dbg; dbg << self_thread() << (Debug::showFilename() ? (std::string(__FILE__)+":") : "") << (Debug::showLineNumber() ? (std::to_string(__LINE__)+": ") : ""); dbg << __CLASS_NAME__ << "::" << __FUNCTION_NAME__ << "("; dbg << fDebug_top( __VA_ARGS__ ); }
 
 #ifndef fDebug
 extern void fDebug(); // KDevelop hack

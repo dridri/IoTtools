@@ -46,13 +46,8 @@ typedef struct sockaddr SOCKADDR;
 typedef struct in_addr IN_ADDR;
 #endif
 #include <iostream>
+#include "Debug.h"
 #include "Socket.h"
-
-#ifndef IPPROTO_UDPLITE
-#define IPPROTO_UDPLITE 136
-#endif
-#define UDPLITE_SEND_CSCOV   10 /* sender partial coverage (as sent)      */
-#define UDPLITE_RECV_CSCOV   11 /* receiver partial coverage (threshold ) */
 
 using namespace IoT;
 
@@ -83,8 +78,8 @@ int Socket::Connect()
 	setBlocking( true );
 
 	if ( mSocket < 0 ) {
-		int type = ( mPortType == UDP or mPortType == UDPLite ) ? SOCK_DGRAM : SOCK_STREAM;
-		int proto = ( mPortType == UDPLite ) ? IPPROTO_UDPLITE : ( ( mPortType == UDP ) ? IPPROTO_UDP : 0 );
+		int type = ( mPortType == UDP ) ? SOCK_DGRAM : SOCK_STREAM;
+		int proto =( mPortType == UDP ) ? IPPROTO_UDP : 0;
 
 		char myname[256];
 		gethostname( myname, sizeof(myname) );
@@ -100,13 +95,8 @@ int Socket::Connect()
 			int flag = 1;
 			setsockopt( mSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(int) );
 		}
-		if ( mPortType == UDPLite ) {
-			uint16_t checksum_coverage = 8;
-			setsockopt( mSocket, IPPROTO_UDPLITE, UDPLITE_SEND_CSCOV, (DATATYPE)&checksum_coverage, sizeof(checksum_coverage) );
-			setsockopt( mSocket, IPPROTO_UDPLITE, UDPLITE_RECV_CSCOV, (DATATYPE)&checksum_coverage, sizeof(checksum_coverage) );
-		}
 		if ( connect( mSocket, (SOCKADDR*)&mSin, sizeof(mSin) ) < 0 ) {
-			std::cout << "Socket ( " << mPort << " ) connect error : " << strerror(errno) << "\n";
+			gDebug() << "Socket ( " << mPort << " ) connect error : " << strerror(errno);
 			close( mSocket );
 			mSocket = -1;
 			mConnected = false;
@@ -149,11 +139,11 @@ int Socket::Read( void* buf, uint32_t len, int timeout )
 		setsockopt( mSocket, SOL_SOCKET, SO_RCVTIMEO, (char*)&tv, sizeof(struct timeval) );
 	}
 
-	if ( mPortType == UDP or mPortType == UDPLite ) {
+	if ( mPortType == UDP ) {
 		socklen_t fromsize = sizeof( mSin );
 		ret = recvfrom( mSocket, (DATATYPE)buf, len, 0, (SOCKADDR *)&mSin, &fromsize );
 		if ( ret <= 0 and errno != EAGAIN ) {
-			std::cout << "UDP disconnected ( " << ret << " : " << strerror( errno ) << " )\n";
+			gDebug() << "UDP disconnected ( " << ret << " : " << strerror( errno );
 			mConnected = false;
 			return -1;
 		}
@@ -162,7 +152,7 @@ int Socket::Read( void* buf, uint32_t len, int timeout )
 		ret = recv( mSocket, (DATATYPE)buf, len, MSG_NOSIGNAL );
 // 		if ( ( ret <= 0 and errno != EAGAIN ) or ( errno == EAGAIN and timeout > 0 ) ) {
 		if ( ret <= 0 ) {
-			std::cout << "TCP disconnected ( " << strerror( errno ) << " )\n";
+			gDebug() << "TCP disconnected ( " << strerror( errno );
 			mConnected = false;
 			return -1;
 		}
@@ -190,7 +180,7 @@ int Socket::Write( const void* buf, uint32_t len, int timeout )
 
 	int ret = 0;
 
-	if ( mPortType == UDP or mPortType == UDPLite ) {
+	if ( mPortType == UDP ) {
 		uint32_t sendsize = sizeof( mSin );
 		ret = sendto( mSocket, (DATATYPE)buf, len, 0, (SOCKADDR *)&mSin, sendsize );
 	} else {
@@ -201,8 +191,8 @@ int Socket::Write( const void* buf, uint32_t len, int timeout )
 		return 0;
 	}
 
-	if ( ret < 0 and mPortType != UDP and mPortType != UDPLite ) {
-		std::cout << "TCP disconnected\n";
+	if ( ret < 0 and mPortType != UDP ) {
+		gDebug() << "TCP disconnected";
 		mConnected = false;
 		return -1;
 	}

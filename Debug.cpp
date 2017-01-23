@@ -20,3 +20,5 @@
 
 // Debugging enabled by default
 bool Debug::sEnabled = true;
+bool Debug::sLineNumber = false;
+bool Debug::sFilename = false;

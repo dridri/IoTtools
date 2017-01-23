@@ -27,6 +27,8 @@
 
 using namespace IoT;
 
+std::map< uint32_t, std::function<void(Packet&)> > Messenger::mCallbacks;
+
 Messenger::Messenger( Link* link )
 	: mLink( link )
 	, mConnected( false )
@@ -62,13 +64,40 @@ void Messenger::loadConfig( const std::string& content )
 }
 
 
-void Messenger::RegisterCallback( uint32_t command, const std::function<void()>& fct )
+void Messenger::RegisterCallback( uint32_t command, const std::function<void(Packet&)>& fct )
 {
-	fDebug( command, "callback" );
+	fDebug( command, "#ptr" );
+
+	if ( mCallbacks.find( command ) != mCallbacks.end() ) {
+		// TODO : trigger "already registered" error
+	} else {
+		mCallbacks.emplace( std::make_pair( command, fct ) );
+	}
 }
 
 
 void Messenger::Poll( uint32_t timeout_ms )
 {
 	fDebug( timeout_ms );
+
+	if ( not mLink ) {
+		return;
+	}
+	if ( not mLink->isConnected() ) {
+		if ( mLink->Connect() < 0 ) {
+			gDebug() << "Connection failed !";
+			usleep( 1000 * 500 );
+			return;
+		}
+	}
+
+	Packet packet;
+	int ret = mLink->Read( &packet, timeout_ms );
+
+	if ( ret > 0 ) {
+		uint32_t command = 0;
+		if ( packet.ReadU32( &command ) > 0 and mCallbacks.find( command ) != mCallbacks.end() ) {
+			mCallbacks.at( command )( packet );
+		}
+	}
 }

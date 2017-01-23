@@ -21,11 +21,31 @@
 
 using namespace IoT;
 
+#define EXAMPLE_COMMAND 42
+
+void ExampleCommand( Packet& packet )
+{
+	std::cout << "Received message : \"" << packet.ReadString() << "\"\n";
+}
+
+
 int main( int ac, char** av )
 {
+	Debug::setEnabled( true );
+
+	// Setup link, connect to master at address 127.0.0.1 (localhost) on TCP port 4242
 	Link* link = new Socket( "127.0.0.1", 4242, Socket::TCP );
+
+	// Create new Messenger instance using the link created above
 	Messenger* messenger = new Messenger( link );
-	messenger->Poll();
+
+	//Register command callback
+	messenger->RegisterCallback( EXAMPLE_COMMAND, ExampleCommand );
+
+	while ( 1 ) {
+		// Wait for master to send commands
+		messenger->Poll();
+	}
 
 	return 0;
 }

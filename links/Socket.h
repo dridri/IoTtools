@@ -34,8 +34,9 @@ class Socket : public Link
 public:
 	typedef enum {
 		TCP,
+		TCPServer,
 		UDP,
-		UDPLite
+		UDPServer
 	} PortType;
 
 	Socket( const std::string& host, uint16_t port, PortType type = TCP );
